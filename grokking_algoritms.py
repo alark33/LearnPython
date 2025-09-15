@@ -1,55 +1,27 @@
-#Алгоритм Дейкстры
-#создаём хеш-таблицу, содержащую все узлы и сумму ребер
-graph = {'start': {'a': 6,
-                   'b': 2},
-         'a': {'finish': 1,},
-         'b': {'a': 3,
-               'finish': 5},
-         'finish':{},
-}
+#ПРИМЕР ЖАДНОГО АЛГОРИТМА
+#на каких радиостанциях должна транслироваться передача,чтобы 
+#слушали во всех штатах 
+states_needed = set(['mt', 'wa', 'or', 'id', 'nv', 'ut', 'ca', 'az'])
 
-#хеш-таблица стоимостей, которая будет изменяться во время 
-# выполнения алгоритма
-infinity = float('inf')
-costs = {'a': 6,
-         'b': 2,
-         'finish': infinity}
+stations = {}
+stations["kone"] = set(["id", "nv", "ut"])
+stations["ktwo"] = set (["wa", "id", "mt"])
+stations["kthree"] = set(["or", "nv", "са"])
+stations["kfour"] = set(["nv", "ut"])
+stations["kfive"] = set(["ca", "az"])
 
-#хеш-таблица для указания родителей узлов
-parents ={'a': 'start',
-          'b': 'start',
-          'finish': None,
-          }
+final_stations = set()
 
-#список для отслеживания всех уже обработанных узлов
-proccessed = []
+while states_needed:
+    best_station = None
+    states_covered = set()
+    for station, states_for_station in stations.items():
+        covered = states_needed & states_for_station
+        if len(covered) > len(states_covered):
+            best_station = station
+            states_covered = covered
 
-def find_lowest_cost_node(costs):
-    lowest_cost = float('inf')
-    lowest_cost_node = None
-    for node in costs:
-        cost = costs[node]
-        if cost < lowest_cost and node not in proccessed:
-            lowest_cost = cost
-            lowest_cost_node = node
-    return lowest_cost_node
+    states_needed -= states_covered
+    final_stations.add(best_station)
 
-node = find_lowest_cost_node(costs)
-while node is not None:
-    cost = costs[node]
-    neighbors = graph[node]
-    for n in neighbors.keys():
-        new_cost = cost + neighbors[n]
-        if costs[n] > new_cost:
-            costs[n] = new_cost
-            parents[n] = node
-    proccessed.append(node)
-    node = find_lowest_cost_node(costs)
-
-print(costs)
-print(costs['finish'])
-print(parents)
-
-#8
-#60
-#4
+print(final_stations)
